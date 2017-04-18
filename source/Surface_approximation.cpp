@@ -44,6 +44,7 @@ using namespace std;
 #include "io.h"
 #include "mesh.h"
 #include <iostream>
+#include <direct.h>
 #include "ui_Alpha_shapes_2.h"
 #include <CGAL/Qt/resources.h>
 
@@ -97,12 +98,9 @@ int main(int argc, char** argv)
 	using namespace boost;
 	using namespace Eigen;
 
-	//cout << "my directory is" << exePath() << endl;
-
-	//srand(time(NULL));
 
 	//Read the parameters from the external text file
-	if (!readParameterFile(exePath() + "\\..\\input extract indices.txt"))
+	if (!readParameterFile(exePath() + "\\..\\..\\source\\input extract indices.txt"))
 	{
 		return(0);
 	}
@@ -199,7 +197,7 @@ int main(int argc, char** argv)
 //		// while at least 'threshold_inliers' points from the original cloud are still not fitted (e.g. 30%)
 //		while (cloud_filtered->points.size() > threshold_inliers)
 //		{
-//			readParameterFile(exePath() + "\\..\\input extract indices.txt");
+//			readParameterFile(exePath() + "\\..\\..\\source\\input extract indices.txt");
 //			// ---> planar segmentation
 //			// create the segmentation object for plane
 //			pcl::SACSegmentation<pcl::PointXYZ> seg;
@@ -346,7 +344,7 @@ int main(int argc, char** argv)
 		//i = 0;
 		while (cloud_filtered->points.size() > threshold_inliers) // && i<8)
 		{
-			readParameterFile(exePath() + "\\..\\input extract indices.txt");
+			readParameterFile(exePath() + "\\..\\..\\source\\input extract indices.txt");
 			// create the segmentation object
 			pcl::SACSegmentationFromNormals<pcl::PointXYZ, pcl::Normal> seg_cyl;
 			//pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
@@ -511,7 +509,7 @@ int main(int argc, char** argv)
 
 		while (cloud_filtered->points.size() > threshold_inliers)
 		{
-			readParameterFile(exePath() + "\\..\\input extract indices.txt");
+			readParameterFile(exePath() + "\\..\\..\\source\\input extract indices.txt");
 			// Create the segmentation object for cone
 			pcl::SACSegmentationFromNormals<pcl::PointXYZ, pcl::Normal> seg_cone;
 			// Set all the parameters for cone segmentation object
