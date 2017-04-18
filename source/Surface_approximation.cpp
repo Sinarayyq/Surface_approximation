@@ -98,6 +98,17 @@ int main(int argc, char** argv)
 	using namespace boost;
 	using namespace Eigen;
 
+	//Create temp folder if not already existed.
+	string project_path = exePath() + "\\..\\..";
+	if ((CreateDirectory((project_path + "\\temp").c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError()))
+	{
+		
+	}
+	else
+	{
+		mkdir((project_path + "\\temp").c_str());
+	}
+		
 
 	//Read the parameters from the external text file
 	if (!readParameterFile(exePath() + "\\..\\..\\source\\input extract indices.txt"))
