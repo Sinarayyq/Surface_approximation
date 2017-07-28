@@ -84,5 +84,7 @@ double getAlphaShapeArea(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
 
 void displayAlphaShape(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
 
+Polygon_list getAlphaShape(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
+
 
 #endif

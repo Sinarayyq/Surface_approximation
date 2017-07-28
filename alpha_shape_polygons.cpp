@@ -771,6 +771,39 @@ double getAlphaShapeArea(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
 	return total_area;
 }
 
+Polygon_list getAlphaShape(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
+{
+	std::list<Point> points;
+	/*if (!file_input(std::back_inserter(points), path))
+	{
+
+	}*/
+	int cloud_size = cloud->points.size();
+	for (int i = 0; i < cloud_size; i++)
+	{
+		points.push_back(Point(cloud->at(i).x, cloud->at(i).z));
+	}
+
+	Alpha_shape_2 A(points.begin(), points.end(), FT(100000), Alpha_shape_2::REGULARIZED);
+
+	A.set_alpha(1000.0);
+	std::vector<Alpha_shape_2::Point> alpha_shape_edges;
+
+	for (Alpha_shape_edges_iterator it = A.alpha_shape_edges_begin(); it != A.alpha_shape_edges_end(); ++it)
+	{
+		alpha_shape_edges.push_back(A.segment(*it).vertex(0));
+		alpha_shape_edges.push_back(A.segment(*it).vertex(1));
+	}
+	//Future modificaiton: output directly from polygon_list
+	//outputEdgeOnTXT(alpha_shape_edges);
+	//std::vector<SEdge> edge_list = loadEdgeFromTXT("C:\\Alpha_shapes_2\\alpha_shape_edges.txt", alpha_shape_edges.size() / 2);
+	std::vector<SEdge> edge_list = loadEdgeFromTXT(alpha_shape_edges);
+	//outputEdgeList(edge_list);
+	Polygon_list polygon_list = polygonPartition(edge_list);
+	return polygon_list;
+	
+}
+
 void displayAlphaShape(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
 {
 	int argc = 1;
