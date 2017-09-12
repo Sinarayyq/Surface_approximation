@@ -221,7 +221,7 @@ int FindCylinderBorder(pcl::PointCloud<pcl::PointXYZ>::Ptr *cloud, pcl::PointClo
 
 	//convex hull
 	double convex_hull_area;
-	Eigen::MatrixXf temp_patch_data = MainCylindricalPatch(transformed_cyl_patch_cloud, flattened_cloud, coefficients->values, &convex_hull_area);
+	Eigen::MatrixXf temp_patch_data = MainCylindricalPatch(flattened_cloud, coefficients->values, &convex_hull_area);
 	std::cout << "alpha_shape_area = " << alpha_shape_area << std::endl;
 	std::cout << "convex_hull_area = " << convex_hull_area << std::endl;
 
@@ -407,11 +407,11 @@ int FindConeBorder(pcl::PointCloud<pcl::PointXYZ>::Ptr *cloud, pcl::PointCloud<p
 	(*cloud_cone).swap(*cloud_projected);
 
 
-
+	float map_gap;
 	//rotate the cone so that the axis aligns with the +Z axis, the origin point is the conic point
 	pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cone_patch_cloud = transformConicalPatchPoints(cloud_cone, coefficients->values);
 	//flatten 3d point cloud into XOZ-Plane
-	pcl::PointCloud<pcl::PointXYZ>::Ptr flattened_cloud = FlattenCloud(transformed_cone_patch_cloud, coefficients->values);
+	pcl::PointCloud<pcl::PointXYZ>::Ptr flattened_cloud = FlattenCloud(transformed_cone_patch_cloud, coefficients->values, &map_gap);
 
 
 	//alpha shape
@@ -420,7 +420,7 @@ int FindConeBorder(pcl::PointCloud<pcl::PointXYZ>::Ptr *cloud, pcl::PointCloud<p
 
 	//convex hull
 	double convex_hull_area;
-	Eigen::MatrixXf temp_patch_data = MainConicalPatch(transformed_cone_patch_cloud, flattened_cloud, coefficients->values, &convex_hull_area);
+	Eigen::MatrixXf temp_patch_data = MainConicalPatch(flattened_cloud, coefficients->values, &convex_hull_area, map_gap);
 	std::cout << "alpha_shape_area = " << alpha_shape_area << std::endl;
 	std::cout << "convex_hull_area = " << convex_hull_area << std::endl;
 

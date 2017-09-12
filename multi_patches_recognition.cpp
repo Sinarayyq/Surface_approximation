@@ -20,6 +20,11 @@ int MultiPatchesPartition(pcl::PointCloud<pcl::PointXYZ>::Ptr *cloud, pcl::Point
 	pcl::copyPointCloud(**cloud, *cloud_copy);
 	pcl::copyPointCloud(**cloud_normals, *cloud_normals_copy);
 
+	PLANE_TOL /= 2;
+	CYL_TOL /= 2;
+	CONE_TOL /= 2;
+
+
 	Tree T(cloud_copy, cloud_normals_copy, threshold_inliers);
 
 

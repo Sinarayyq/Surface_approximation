@@ -10,6 +10,7 @@
 
 #include <pcl/io/pcd_io.h>
 #include <Eigen/Geometry> 
+//#include <Eigen/src/Eigen2Support/Geometry/Hyperplane.h>
 
 #include "cloud_visualizer.h"
 #include "io.h"

@@ -87,6 +87,55 @@ bool IsSupportPos(std::string* load_file)
 	return false;
 }
 
+//void ThreePointsToPlane(pcl::PointXYZ point_a, const pcl::PointXYZ point_b,const pcl::PointXYZ point_c,pcl::ModelCoefficients::Ptr plane)
+//{
+//	// Create Eigen plane through 3 points 
+//	Eigen::Hyperplane<float, 3> eigen_plane = 
+//	Eigen::Hyperplane<float, 3>::Through(point_a.getArray3fMap(),point_b.getArray3fMap(),point_c.getArray3fMap());
+//
+//	plane->values.resize(4);
+//
+//	for (int i = 0; i < plane->values.size(); i++)
+//		plane->values[i] = eigen_plane.coeffs()[i];
+//}
+
+void TransformCloseToCoordinateSystem(pcl::PointCloud<pcl::PointXYZ>::Ptr *cloud)
+{
+	//pcl::ModelCoefficients::Ptr plane;
+	//ThreePointsToPlane((cloud->at(0))., cloud->at(1), cloud->at(2), plane);
+	// Ground plane estimation:
+	Eigen::VectorXf ground_coeffs;
+	ground_coeffs.resize(4);
+	std::vector<int> clicked_points_indices;
+	for (int i = 0; i < 3; i++)
+	{
+		clicked_points_indices.push_back(i);
+	}
+	pcl::SampleConsensusModelPlane<pcl::PointXYZ> model_plane(*cloud);
+	model_plane.computeModelCoefficients(clicked_points_indices, ground_coeffs);
+	std::cout << "Ground plane: " << ground_coeffs(0) << " " << ground_coeffs(1) << " " << ground_coeffs(2) << " " << ground_coeffs(3) << std::endl;
+	pcl::ModelCoefficients::Ptr plane_coefficients(new pcl::ModelCoefficients());
+	plane_coefficients->values.push_back((*cloud)->at(0).x - 1000);
+	plane_coefficients->values.push_back((*cloud)->at(0).y - 1000);
+	plane_coefficients->values.push_back((*cloud)->at(0).z - 1000);
+	
+	for (int i = 0; i < 4; i++)
+	{
+		plane_coefficients->values.push_back(ground_coeffs(i));
+	}
+	plane_coefficients->values.push_back(0.8);
+	
+	pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+	transformed_cloud = transformConicalPatchPoints(*cloud, plane_coefficients->values);
+	(*cloud).swap(transformed_cloud);
+
+	//pcl::PointCloud<pcl::Normal>::Ptr transformed_cloud_normals(new pcl::PointCloud<pcl::Normal>);
+	//transformed_cloud_normals = transformPlanarPatchPoints(cloud_normal, plane_coefficients->values);
+	//(*cloud_normal).swap(*transformed_cloud_normals);
+}
+
+
+
 int main(int argc, char** argv)
 {
 	using namespace std;
@@ -193,9 +242,9 @@ int main(int argc, char** argv)
 		Eigen::MatrixXf *patch_data = new Eigen::MatrixXf[max_patches]; //vector of matrices
 		pcl::PointCloud<pcl::PointXYZ>::Ptr *sourceClouds = new pcl::PointCloud<pcl::PointXYZ>::Ptr[max_patches]; //vector of pointers to cloud
 																												  //vector < PointCloud<PointXYZ>::Ptr, Eigen::aligned_allocator <PointCloud <PointXYZ>::Ptr > > sourceClouds;
-
-
-
+		visualizePointCloud(cloud, "cloud before transforming", xy);
+		TransformCloseToCoordinateSystem(&cloud);
+		visualizePointCloud(cloud, "cloud after transforming", xy);
 
 		//int model_with_maximum_points[4];   // [1/2/3][num_plane][num_cylinder][num_cone]
 		                                    // [1/2/3]: the model with maximum points,0 = plane,1=cylinder,2=cone
@@ -210,8 +259,7 @@ int main(int argc, char** argv)
 
 		//if (!SinglePatchPartition(&cloud, &cloud_normals, threshold_inliers, &patch_count, &patch_data, &sourceClouds))
 		//{
-
-		MultiPatchesPartition(&cloud, &cloud_normals, threshold_inliers, &patch_count, &patch_data, &sourceClouds);
+			MultiPatchesPartition(&cloud, &cloud_normals, threshold_inliers, &patch_count, &patch_data, &sourceClouds);
 		//}
 
 

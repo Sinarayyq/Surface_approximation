@@ -72,7 +72,7 @@ cv::RotatedRect getMinAreaRectForPlanarPoints(pcl::PointCloud<pcl::PointXYZ>::Pt
 //
 
 Eigen::MatrixXf MainPlanarPatch(pcl::PointCloud<pcl::PointXYZ>::Ptr planar_patch_cloud, std::vector<float> plane_param, double *convex_hull_area);
-
+Eigen::MatrixXf MainPlanarPatch(pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_pla_patch_cloud, std::vector<float> plane_param);
 // It transforms the set of points corresponding to a PLANAR patch, moving them
 // such that z axis is aligned with the normal to the plane and xy-plane 
 // is concident with the PLANE.
@@ -109,8 +109,8 @@ std::vector<int> IdentifyPlaneChains(pcl::PointCloud<pcl::PointXYZ>::Ptr plane_c
 // column one represents the index of orignal 3D cloud that can form first vertix of a candidate line
 // column two represents the index of orignal 3D cloud that can form second vertix of a candidate line
 // Column three represnt the chain number, untill the chain number is not changed it implies that the vertixes can be merged and one candidate line can be formed
-Eigen::MatrixXf  MainCylindricalPatch(pcl::PointCloud<pcl::PointXYZ>::Ptr cylindrical_patch_cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr flattened_cloud, std::vector<float> cone_param, double *convex_hull_area);
-
+Eigen::MatrixXf MainCylindricalPatch(pcl::PointCloud<pcl::PointXYZ>::Ptr flattened_cloud, std::vector<float> cone_param, double *convex_hull_area);
+Eigen::MatrixXf MainCylindricalPatch(pcl::PointCloud<pcl::PointXYZ>::Ptr flattened_cloud, std::vector<float> cyl_param);
 // This function takes input convex hull points as its input and return of vector of points which can form candidate lines when joined together 
 std::vector<point> CylinderCandiateLines (std::vector<point> convex_hull_points,std::vector<float> cone_param);
 
@@ -142,8 +142,8 @@ std::vector<float> computePlanePassingThroughPointWithGivenNormal(Eigen::Vector3
 // column one represents the index of orignal 3D cloud that can form first vertix of a candidate line
 // column two represents the index of orignal 3D cloud that can form second vertix of a candidate line
 // Column three represnt the chain number, untill the chain number is not changed it implies that the vertixes can be merged and one candidate line can be formed
-Eigen::MatrixXf MainConicalPatch(pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cone_patch_cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr flattened_cloud, std::vector<float> cone_param, double *convex_hull_area);
-
+Eigen::MatrixXf MainConicalPatch(pcl::PointCloud<pcl::PointXYZ>::Ptr flattened_cloud, std::vector<float> cone_param, double *convex_hull_area, float max_gap);
+Eigen::MatrixXf MainConicalPatch(pcl::PointCloud<pcl::PointXYZ>::Ptr flattened_cloud, std::vector<float> cone_param, float max_gap);
 // This function will try to merge the candidate lines to form a continious chains 
 std::vector<int> IdentifyChains(pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cone_patch_cloud,std::vector<int> &indexes,std::vector<int> &marker_chain);
 
@@ -153,11 +153,11 @@ std::vector<point> ConeCandiateLines (std::vector<point> convex_hull_points);
 std::vector<point> PreSelectionForBorder (pcl::PointCloud<pcl::PointXYZ>::Ptr flatten_cloud);
 
 // This function returns a flatten conical point cloud. It revokes "TranformConicalPoint CLoud", "sortcloud" and "Cutting direction" functions
-pcl::PointCloud<pcl::PointXYZ>::Ptr FlattenCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cone_patch_cloud, std::vector<float> cone_param);
+pcl::PointCloud<pcl::PointXYZ>::Ptr FlattenCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cone_patch_cloud, std::vector<float> cone_param, float *max_gap);
 
 // This function takes sorted point cloud as a parameter and reurn then cutting angle in (-pi, pi)
 //It looks for the largest gap among consecutive sorted thetas
-float CuttingDirection(pcl::PointCloud<pcl::PointXYZ>::Ptr sorted_cloud);
+float CuttingDirection(pcl::PointCloud<pcl::PointXYZ>::Ptr sorted_cloud, float *max_gap);
 
 // This funciton take canonical cloud(rad, theta) and cone parameters as input
 // And returns a sorted point cloud sorted in incresing theta value
@@ -190,7 +190,7 @@ double getConvexHullArea(std::vector<point> convex_hull_points);
 
 std::vector<point> convexHullForPoints(pcl::PointCloud<pcl::PointXYZ>::Ptr planar_patch_cloud);
 
-std::vector<point> GenerateConvexHull(std::vector<point> convex_hull_points1);
+std::vector<point> GenerateConvexHull(std::vector<point> convex_hull_points, float beta_max, float max_gap, float beta_fan);
 
 std::vector<point> SequenceConvexHull(std::vector<point> convex_hull_points);
 

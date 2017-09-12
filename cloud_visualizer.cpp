@@ -77,6 +77,7 @@ void visualizePointCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud1, pcl::PointC
 	while (!viewer.wasStopped())
 	{
 		viewer.spinOnce();
+		boost::this_thread::sleep(boost::posix_time::microseconds(100000));
 	}
 	viewer.close();
 }
